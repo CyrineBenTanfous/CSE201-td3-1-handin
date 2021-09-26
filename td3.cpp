@@ -125,27 +125,45 @@ bool simulate_projectile(const double magnitude, const double angle,
   return hit_target;
 }
 
+
+
+void sort_telemetries(double *global_telemetry, int &global_telemetry_current_size) {
+  for(int i = 0; i < global_telemetry_current_size; i = i+3)
+      for(int j = 0; j < global_telemetry_current_size-3; j = j+3){
+          if (global_telemetry[j] > global_telemetry[j+3]){
+              double n = global_telemetry[j];
+              double m = global_telemetry[j+1];
+              double l = global_telemetry[j+2];
+              global_telemetry[j] = global_telemetry[j+3];
+              global_telemetry[j+1] = global_telemetry[j+4];
+              global_telemetry[j+2] = global_telemetry[j+5];
+              global_telemetry[j+3] = n;
+              global_telemetry[j+4] = m;
+              global_telemetry[j+5] = l;
+          }
+      }
+}
+
 void merge_telemetry(double **telemetries,
                      int tot_telemetries,
                      int *telemetries_sizes,
                      double* &global_telemetry,
                      int &global_telemetry_current_size,
-                     int &global_telemetry_max_size) {
-    global_telemetry_max_size = 0;
-    for (int i = 0; i < tot_telemetries; ++i) {
-        global_telemetry_max_size += telemetries_sizes[i];
+                     int &global_telemetry_max_size){
+
+  for (int i = 0; i < tot_telemetries; i++){
+    for (int j = 0; j < telemetries_sizes[i]; j++){
+        global_telemetry = append_to_array(telemetries[i][j],
+                                  global_telemetry,
+                                  global_telemetry_current_size,
+                                  global_telemetry_max_size);
     }
-    double *telemetry = new double[global_telemetry_max_size];
-    global_telemetry_current_size = 0;
-    for (int i = 0; i < tot_telemetries; ++i)
-        for (int j = 0; j < telemetries_sizes[i]; ++j)
-            telemetry = append_to_array(telemetries[i][j],
-                                      telemetry,
-                                      global_telemetry_current_size,
-                                      global_telemetry_max_size);
-    }
+  }
+//  std::cout<< "global_telemetry[0]"<<global_telemetry[0]<<std::endl;
+//  std::cout<< "global_telemetry[1]"<<global_telemetry[1]<<std::endl;
+//  std::cout<< "global_telemetry[2]"<<global_telemetry[2]<<std::endl;
+//  std::cout<< "global_telemetry[3]"<<global_telemetry[3]<<std::endl;
 
-  // IMPLEMENT YOUR FUNCTION HERE
-
-
+  sort_telemetries(global_telemetry, global_telemetry_current_size);
+}
 
